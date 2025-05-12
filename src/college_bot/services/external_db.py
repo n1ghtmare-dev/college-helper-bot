@@ -30,6 +30,7 @@ class ExternalDB:
         """Execute SELECT and return list of str, (every string - dict)"""
         with self.conn.cursor() as cursor:
             cursor.execute(sql, args or ())
+            return cursor.fetchall()
 
     def execute(self, sql: str, args=None) -> int:
         """Execute INSERT/UPDATE/DELETE and return number of changed strings"""

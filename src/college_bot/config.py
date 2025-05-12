@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DB_NAME: str
 
     @property
-    def DB_CONFIG(self) -> dict:
+    def DB_CONFIG(self) -> dict[str, str]:
         return {
             'host': self.DB_HOST, 
             'user': self.DB_USER, 
