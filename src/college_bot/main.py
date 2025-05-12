@@ -1,4 +1,5 @@
 import asyncio 
+from core.dispatcher import dp, bot
 
 
 async def main() -> None:
