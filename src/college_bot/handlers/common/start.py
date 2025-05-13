@@ -14,7 +14,6 @@ async def start(message: types.Message):
     with ExternalDB(settings.DB_CONFIG) as db:
         query = db.query('SELECT group_id, username FROM all_users WHERE id_user = %s AND group_id IS NOT NULL', (user_id,))
     
-    group = query[0]['group_id']
     # TODO: Get out keyboards into other module
     registration = InlineKeyboardMarkup(
          inline_keyboard=[[
@@ -25,7 +24,13 @@ async def start(message: types.Message):
     ])
 
     if len(query) > 0:
+        group = query[0]['group_id']
+        
+        headman = True # TODO: -> check headman in group
+
+
         await message.answer(f'Вы зарегистрированы в группе {group}.')
+
         # TODO: Проверка на старосту в json
     else:
         await message.answer('Вы не зарегистрированы в какой-либо группе....')
