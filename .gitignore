@@ -5,3 +5,5 @@ venv/
 .cache/
 .DS_Store
 *.sqlite3
+.idea/
+.vscode/
