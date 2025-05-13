@@ -16,22 +16,40 @@ async def start(message: types.Message):
     
     # TODO: Get out keyboards into other module
     registration = InlineKeyboardMarkup(
-         inline_keyboard=[[
-              InlineKeyboardButton(
-              text='Зарегистрироваться',
-              url='https://t.me/Iubip_assistant_bot',
-              )]
+        inline_keyboard=[[
+            InlineKeyboardButton(
+                text='Зарегистрироваться',
+                url='https://t.me/Iubip_assistant_bot',
+            )]
+    ])
+    become_leader = InlineKeyboardMarkup (
+        inline_keyboard=[[
+            InlineKeyboardButton(
+                text="Стать старостой этой группы",
+                callback_data='become_leader'
+                )]
     ])
 
     if len(query) > 0:
         group = query[0]['group_id']
+        await message.answer(f'Вы зарегистрированы в группе {group}.')
         
         headman = True # TODO: -> check headman in group
+        
+        if headman:
+            await message.answer(f'Вы староста своей группы')
+        else:
+            headmen_count = 1 # TODO: -> check headman count in group
+            if headmen_count < 2:
+                await message.answer(
+                    f'Вы не являетесь старостой, но в этой группе меньше 2-х старост, у Вас есть возможность зарегистрироваться, как староста.',
+                    reply_markup=become_leader)
+            else:
+                await message.answer('В Вашей группе уже зарегистрированы старосты, вы не можете зарегистрироваться')
+        
 
+        
 
-        await message.answer(f'Вы зарегистрированы в группе {group}.')
-
-        # TODO: Проверка на старосту в json
     else:
         await message.answer('Вы не зарегистрированы в какой-либо группе....')
         await message.answer('Для дальнейшего использования бота Вам необходимо зарегистрироваться в своей группе через другого бота. Вы можете это сделать по кнопке ниже:', reply_markup=registration)
