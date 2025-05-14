@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
-from utils.json_handler.data_manager import GroupsUpdater
+from utils.json_handler.data_manager import JsonDataManager
 from services.crud.groups_crud import get_user_group
 from config import settings 
 from pathlib import Path
@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 router = Router()
-json_manager = GroupsUpdater(settings.DB_CONFIG)
+json_manager = JsonDataManager(settings.DB_CONFIG)
 
 
 @router.callback_query(F.data == 'become_leader')

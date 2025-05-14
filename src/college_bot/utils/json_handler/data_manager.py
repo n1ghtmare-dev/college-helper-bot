@@ -4,37 +4,25 @@ from pathlib import Path
 from typing import Dict, List, Any
 from contextlib import contextmanager
 from services.external_db import ExternalDB
+from services.crud.groups_crud import get_user_group, get_all_groups
 
 logger = logging.getLogger(__name__)
 
-class GroupsUpdater:
+class JsonDataManager:
     def __init__(self, db_config: dict[str, str], json_path: Path = None):
         default_json_path = Path(__file__).resolve().parent.parent.parent.parent.parent / "data/groups.json"
         self.db_config = db_config
         self.json_path = json_path if json_path != None else default_json_path
-
-    @contextmanager
-    def get_db_connection(self):
-        db = ExternalDB(self.db_config)
-        try:
-            with db as conn:
-                yield conn
-        except Exception as e:
-            logger.error(f"Database error connection: {e}")
-            raise
     
     def get_groups_data(self) -> List[Dict]:
         try:
-            with self.get_db_connection() as db:
-                return db.query("""
-                SELECT first_name, students_count, headmen
-                FROM users
-                WHERE is_active = 1 
-                """)
+            with open(self.json_path, 'r', encoding='utf-8') as file:
+                groups_data: Dict[str, Any] = json.load(file)
+            return groups_data
         except Exception as e:
-            logger.error(f"Failed to fetch group: {e}")
+            logger.error(f"Failed to fetch data: {e}")
             return []
-        
+
     def save_to_json(self, data: Dict) -> bool:
         try:
             with open(self.json_path, 'w', encoding="utf-8") as f:
