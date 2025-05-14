@@ -1,8 +1,9 @@
 import json
 import logging
+from config import settings
 from pathlib import Path
 from typing import Dict, List, Any
-from contextlib import contextmanager
+from services.crud.groups_crud import GroupCrud
 from services.external_db import ExternalDB
 
 logger = logging.getLogger(__name__)
@@ -12,29 +13,22 @@ class GroupsUpdater:
         default_json_path = Path(__file__).resolve().parent.parent.parent.parent.parent / "data/groups.json"
         self.db_config = db_config
         self.json_path = json_path if json_path != None else default_json_path
-
-    @contextmanager
-    def get_db_connection(self):
-        db = ExternalDB(self.db_config)
-        try:
-            with db as conn:
-                yield conn
-        except Exception as e:
-            logger.error(f"Database error connection: {e}")
-            raise
+        self.crud = GroupCrud(ExternalDB(db_config))
     
     def get_groups_data(self) -> List[Dict]:
         try:
-            with self.get_db_connection() as db:
-                return db.query("""
-                SELECT first_name, students_count, headmen
-                FROM users
-                WHERE is_active = 1 
-                """)
+            groups = self.crud.get_all_groups()
+            schedules = self.crud.get_user_group()
+
+            for group in groups:
+                group_name = group["name"]
+                group['schedule'] = schedules.get(group_name, [])
+
+            return group
         except Exception as e:
-            logger.error(f"Failed to fetch group: {e}")
+            logger.error(f"Failed to fetch data: {e}")
             return []
-        
+
     def save_to_json(self, data: Dict) -> bool:
         try:
             with open(self.json_path, 'w', encoding="utf-8") as f:
