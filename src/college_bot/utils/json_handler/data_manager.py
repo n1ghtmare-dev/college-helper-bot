@@ -1,10 +1,10 @@
 import json
 import logging
-from config import settings
+from college_bot.config import settings
 from pathlib import Path
 from typing import Dict, List, Any
-from services.crud.groups_crud import GroupCrud
-from services.external_db import ExternalDB
+from college_bot.services.crud.groups_crud import GroupCrud
+from college_bot.services.external_db import ExternalDB
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +18,21 @@ class GroupsUpdater:
     def get_groups_data(self) -> List[Dict]:
         try:
             groups = self.crud.get_all_groups()
-            schedules = self.crud.get_user_group()
+            raw_schedules = self.crud.get_user_group() or []
+
+            
+            schedules = {}
+            for item in raw_schedules:
+                group_id = item["group_id"]
+                if group_id not in schedules:
+                    schedules[group_id] = []
+                schedules[group_id].append(item)
 
             for group in groups:
                 group_name = group["name"]
                 group['schedule'] = schedules.get(group_name, [])
 
-            return group
+            return groups
         except Exception as e:
             logger.error(f"Failed to fetch data: {e}")
             return []
@@ -41,9 +49,9 @@ class GroupsUpdater:
         
     def transform_data(self, raw_data: List[Dict]) -> Dict:
         return {
-            item['name']:{
-                "Количество": item[""],
-                "Старосты": self.headmen_parser(item.get('headmen', '')),
+        item['name']: {
+            "Количество": len(item.get("schedule", [])),  # например, длина расписания
+            "Старосты": self.headmen_parser(item.get('headmen', '')),
             }
             for item in raw_data
         }

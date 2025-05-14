@@ -1,5 +1,4 @@
-from services.external_db import ExternalDB
-from config import settings
+from college_bot.services.external_db import ExternalDB
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,6 +26,6 @@ class GroupCrud:
                                 group_id
                                 FROM scheudle
                                 """)
-            return [item["group_id"] for item in result]
+            return [{"name": item["group_id"]} for item in result]
         except Exception as e:
             logger.error(f"Error fetch groups {e}")
