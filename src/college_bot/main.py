@@ -1,6 +1,5 @@
 import asyncio 
 from core.dispatcher import dp, bot
-from background.tasks import start
 from background.scheduler import BackgroundScheduler
 
 
@@ -14,4 +13,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-    # start()

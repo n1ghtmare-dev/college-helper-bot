@@ -49,6 +49,20 @@ class JsonDataManager:
             logger.warning("Invalid headmen format")
             return []
         
+    def get_all_headmen(self) -> List[int]:
+        try:
+            with open(self.json_path, 'r', encoding='utf-8') as file:
+                groups_data: Dict[str, Any] = json.load(file)
+
+            all_headmen = []
+            for group_id, group_info in groups_data.items():
+                all_headmen.extend(group_info.get('Старосты', []))
+
+            return all_headmen
+        except Exception as e:
+            logger.error(f"Failed to fetch data: {e}")
+            return []
+        
     def get_headmen(self, group_id: str) -> List[int]:
         try:
             with open(self.json_path, 'r', encoding='utf-8') as file:
