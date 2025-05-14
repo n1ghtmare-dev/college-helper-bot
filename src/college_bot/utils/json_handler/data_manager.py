@@ -1,17 +1,17 @@
-from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 from contextlib import contextmanager
-from college_bot.services.external_db import ExternalDB
+from services.external_db import ExternalDB
 
 logger = logging.getLogger(__name__)
 
 class GroupsUpdater:
-    def __init__(self, db_config: dict[str, str], json_path: Path):
+    def __init__(self, db_config: dict[str, str], json_path: Path = None):
+        default_json_path = Path(__file__).resolve().parent.parent.parent.parent.parent / "data/groups.json"
         self.db_config = db_config
-        self.json_path = json_path
+        self.json_path = json_path if json_path != None else default_json_path
 
     @contextmanager
     def get_db_connection(self):
@@ -60,3 +60,49 @@ class GroupsUpdater:
         except json.JSONDecodeError:
             logger.warning("Invalid headmen format")
             return []
+        
+    def get_headmen(self, group_id: str) -> List[int]:
+        try:
+            with open(self.json_path, 'r', encoding='utf-8') as file:
+                groups_data: Dict[str, Any] = json.load(file)
+
+            group_data = groups_data.get(group_id, {})
+            return group_data.get("Старосты", [])
+        
+        except FileNotFoundError:
+            logger.error(f"Error: file {self.json_path} not found")
+            return []
+        except json.JSONDecodeError:
+            logger.error(f"Error: file {self.json_path} has incorrect JSON")
+            return []
+        
+    def add_headman(self, user_id: int, group_id: str) -> bool:
+        try:
+            with open(self.json_path, 'r', encoding='utf-8') as file:
+                groups_data: Dict[str, Any] = json.load(file)
+
+            if group_id not in groups_data:
+                logger.error(f"Group {group_id} not found")
+                return False
+            
+            headmen: List[int] = groups_data[group_id].get("Старосты", [])
+
+            if user_id in headmen:
+                logger.info(f"User {user_id} is already a headman in group {group_id}")
+                return True
+            
+            headmen.append(user_id)
+            groups_data[group_id]["Старосты"] = headmen
+
+            return self.save_to_json(groups_data)
+
+        except FileNotFoundError:
+            logger.error(f"Error: file {self.json_path} not found")
+            return False
+        except json.JSONDecodeError:
+            logger.error(f"Error: file {self.json_path} has incorrect JSON")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            return False
+        return True
