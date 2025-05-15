@@ -5,14 +5,26 @@ from typing import Dict, List, Any
 from contextlib import contextmanager
 from services.external_db import ExternalDB
 from services.crud.groups_crud import get_user_group, get_all_groups
+from datetime import datetime
+from aiogram import Bot
+
 
 logger = logging.getLogger(__name__)
 
 class JsonDataManager:
     def __init__(self, db_config: dict[str, str], json_path: Path = None):
-        default_json_path = Path(__file__).resolve().parent.parent.parent.parent.parent / "data/groups.json"
+        self.base_path = Path(__file__).resolve().parent.parent.parent.parent.parent
+        default_json_path = self.base_path / "data/groups.json"
         self.db_config = db_config
         self.json_path = json_path if json_path != None else default_json_path
+        self.create_folder()
+
+    def create_folder(self):
+        images_dir = self.base_path / "data/images"
+        reports_dir = self.base_path / "data/reports"
+        images_dir.mkdir(exist_ok=True)
+        reports_dir.mkdir(exist_ok=True)
+
     
     def get_groups_data(self) -> List[Dict]:
         try:
@@ -32,6 +44,21 @@ class JsonDataManager:
         except (IOError, json.JSONDecodeError) as e:
             logger.error(f"Failed to save JSON: {e}")
             return False
+        
+    async def save_report_and_photo(self, bot: Bot, photo_id: str, report_data: dict):
+
+        photo_file = await bot.get_file(photo_id)
+        photo_path = self.base_path / f"data/images/{report_data['Дата']}_{report_data['user id']}.jpg"
+        
+        await bot.download_file(photo_file.file_path, destination=photo_path)
+
+        report_data['photo_path'] = str(photo_path)
+
+        report_path = self.base_path / f"data/reports/report_{report_data['Дата']}_{report_data['user id']}.json"
+        with open(report_path, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, ensure_ascii=False, indent=4)
+    
+        return report_path
         
     def transform_data(self, raw_data: List[Dict]) -> Dict:
         return {

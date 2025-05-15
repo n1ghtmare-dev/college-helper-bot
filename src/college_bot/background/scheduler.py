@@ -14,11 +14,13 @@ class BackgroundScheduler:
     def _create_job(self):
         
         self.scheduler.add_job(self.tasks.json_update, 'cron', hour=1, minute=0)
-        # self.scheduler.add_job(self.tasks.create_report, 'interval', minutes=1)
+        self.scheduler.add_job(self.tasks.create_report, 'interval', minutes=1)
+        self.scheduler.add_job(self.tasks.send_excel, 'cron', day_of_week='sat', hour=10, minute=0)
         
     async def start(self):
         "Start background tasks"
-        await self.tasks.create_report()
+        # await self.tasks.create_report() # HINT FOR TEST
+        # await self.tasks.send_excel()    # HINT FOR TEST
         self.scheduler.start()
         logger.info("Background scheduler started")
 

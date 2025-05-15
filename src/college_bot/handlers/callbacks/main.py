@@ -4,7 +4,8 @@ from utils.json_handler.data_manager import JsonDataManager
 from services.crud.groups_crud import get_user_group
 from config import settings 
 from pathlib import Path
-
+from aiogram.fsm.context import FSMContext
+from states import ReportStates
 
 
 router = Router()
@@ -27,4 +28,4 @@ async def add_headmen(callback: CallbackQuery):
     else:
         await callback.answer("В вашей группе уже 2 старосты")
 
-    
+
