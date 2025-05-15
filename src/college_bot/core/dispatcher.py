@@ -2,8 +2,9 @@ from aiogram import Bot, Dispatcher
 from config import settings
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from handlers.callbacks.main import router as callbacks_router
+from handlers.callbacks.main import router as main_callbacks_router
 from handlers.common.start import router as start_router
+from handlers.callbacks.report import router as report_router
 import logging
 
 
@@ -21,4 +22,5 @@ bot = Bot(
 )
 
 dp.include_router(start_router)
-dp.include_router(callbacks_router)
+dp.include_router(main_callbacks_router)
+dp.include_router(report_router)

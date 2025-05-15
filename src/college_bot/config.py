@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
     BOT_TOKEN: SecretStr = Field(..., validation_alias="BOT_TOKEN")
+    TELEGRAM_GROUP: str = "-1002295968891"
 
     DB_HOST: str
     DB_USER: str
