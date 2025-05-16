@@ -1,9 +1,66 @@
 # College Helper Bot
 
-A college assistant bot that includes reminders, attendance tracking functionality, and automatic updates
+Бот-помощник для колледжа, включающий напоминания, функцию отслеживания посещаемости и автоматические обновления.
 
-### Description of Key Modules
+### Подготовка окружения
 
-#### `core/` - contains the core project files implementing base functionality
 
-#### `services/` - service layer implementation for external systems integration (DB, APIs)
+
+### Требования
+
+- Python 3.10+
+- Библиотеки:
+    - aiogram
+    - python-dotenv
+    - pydantic-settings
+    - pymysql
+    - apscheduler
+    - pandas
+    - openpyxl
+    - pillow
+
+## Подготовка окружения
+
+### Настройке конфигурации
+
+Создайте .env файл в корневой директории и заполните следующими переменными:
+
+```
+BOT_TOKEN=your_telegram_bot_token_here
+DB_HOST=your_database_host
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_NAME=your_database_name
+```
+
+В файле config.py укажите id телеграм группы:
+
+```
+TELEGRAM_GROUP: str = "-10022959691"
+```
+
+### Установка зависимостей
+
+Перейдите в корневую папку:
+```
+cd college-bot
+```
+
+Установите **poetry** и зависимости:
+```
+pip install poetry
+poetry install
+```
+
+### Запуск
+
+Выдайте права файлу запуска:
+```
+cd scripts
+chmod +x ./start_bot.sh
+```
+
+Запустите бота:
+```
+./start_bot.sh
+```

@@ -63,10 +63,11 @@ class Tasks:
                         print("TIME - ", lesson['time'])
                         print("ПРОВЕРКА РАЗНИЦЫ ВО ВРЕМЕНИ")
                         if self.check_time(lesson['time']):
-                            # TODO: -> SEND MESSAGE
+                            await bot.send_message(group_info['Старосты'][0], 'Нажмите для составления отчёта:', reply_markup=get_report_kb())
                             print("ОТПРАВКА СООБЩЕНИЯ - ", group_info['Старосты'][0])
+
         # FOR TEST REPORT MESSAGE
-        await bot.send_message(5438186408, 'Нажмите для составления отчёта:', reply_markup=get_report_kb())
+        # await bot.send_message(id_юзера, 'Нажмите для составления отчёта:', reply_markup=get_report_kb())
 
     def check_time(self, lesson_start_time: str) -> bool:
         current_time = datetime.now().time()
